@@ -58,7 +58,7 @@ def check_updates
     if updates.size == 0
         msg = "No updates to do on this host."
     else
-        msg = updates.reduce([]) { |col,(k,v)| col << "#{v} #{k.downcase}"}.join(", ") + " updates to do."
+        msg = updates.reduce([]) { |col,(k,v)| col << "#{v} #{k.downcase}"}.join(", ") + " update(s) to do."
     end
     return code,msg
 end
