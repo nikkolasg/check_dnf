@@ -5,7 +5,7 @@
 # Author : Nicolas Gailly v1.0
 # Works with DNF v1.0.0
 
-
+require 'open3'
 
 TITLE = "check_dnf"
 VERSION = "1.0"
@@ -15,9 +15,15 @@ CODES = { OK: 0, WARNING:  1, CRITICAL:  2, UNKNOWN: 3 }
 
 
 def run cmd
-    success = system(cmd)
-    leave :UNKNOWN,"Command #{cmd} did not execute well." unless success
-    return success
+    success = false
+    output = nil
+    Open3.popen3(cmd) do |inp,out,err,t|
+        inp.close
+        output = out.read.chomp
+        out.close
+        leave :UNKNOWN,"Command #{cmd} error : #{err}" unless t.value.success? 
+    end
+    output
 end
 
 def leave status, msg
@@ -30,7 +36,7 @@ def check_updates
     cmd = "dnf updateinfo"
     output = run cmd
     
-    unless ouput =~ /^Updates Information Summary: (\w+)$/
+    unless output =~ /^Updates Information Summary: (\w+)$/
         leave :UNKNOWN,"DNF output not recognized. Check the DNF version and the plugin."
     end
 
