@@ -60,7 +60,12 @@ def check_updates
     else
         msg = updates.reduce([]) { |col,(k,v)| col << "#{v} #{k.downcase}"}.join(", ") + " updates to do."
     end
-    leave code,msg
+    return code,msg
 end
 
-check_updates
+begin
+    code,msg = check_updates
+    leave code,msg
+rescue StandardError => e
+    leave :UNKNOWN,"Unknown error : #{e}"
+end
