@@ -36,12 +36,12 @@ def check_updates
     cmd = "dnf updateinfo"
     output = run cmd
     
-    unless output =~ /^Updates Information Summary: (\w+)$/
-        leave :UNKNOWN,"DNF output not recognized. Check the DNF version and the plugin."
-    end
-
-    unless $1 =~ /available/
-        leave :UNKNOWN,"DNF do not have update information summary available. Check with DNF"
+    if output =~ /^Updates Information Summary: (\w+)$/
+        unless $1 =~ /available/
+            leave :UNKNOWN,"DNF do not have update information summary available. Check with DNF"
+        end
+    else
+        leave :OK,"DNF shows no updates to do !"
     end
 
     updates = Hash.new { |h,k| h[k] = 0 }
